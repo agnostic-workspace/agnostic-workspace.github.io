@@ -1,0 +1,112 @@
+
+
+@font-face {
+    font-family: 'RobotoMono';
+    src: url('./RobotoMono-Regular.ttf')  format('truetype');
+}
+
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('./Roboto-Regular.ttf')  format('truetype');
+}
+
+
+@font-face {
+    font-family: 'RobotoBlack';
+    src: url('./Roboto-Black.ttf')  format('truetype');
+}
+
+
+body {
+    background: #202020;;
+    color: #C0C0C0;
+    font-family: RobotoMono;
+    overflow: hidden;
+    width: 100vw;
+
+    --toolbar-height: 24px;
+}
+
+
+body * {
+    scrollbar-color: #aaa #202020;
+    scrollbar-width: thin;
+}
+
+
+::selection {
+    color: black;
+    background: #A0A0A0;
+}
+
+
+#editor, #terminal, #terminal * {
+    color: #E0E0E0;
+    font-family: RobotoMono;
+    background: #202020;
+    line-height: 1.5em;
+}
+
+
+#terminal {
+    width: 100vw !important;
+}
+
+
+#editor {
+    width: calc(100vw - 20px);
+    resize: none;
+    outline: none;
+    border: none;
+    font-size: 12px;
+    padding: 10px;
+}
+
+
+.gutter {
+    background: #000000;
+    cursor: ns-resize;
+}
+
+
+#toolbar {
+    line-height: var(--toolbar-height);
+    height: var(--toolbar-height);
+    font-family: RobotoBlack;
+    font-size: 16px;
+    padding: 0 10px;
+    width: 100vw;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: none;
+    cursor: ew-resize;
+    background: black;
+    color: white;
+    user-select: none;
+}
+
+
+#toolbar span.button {
+    height: var(--toolbar-height);
+    display: inline-block;
+    font-family: Roboto;
+    font-size: 12px;
+    margin-left: 2em;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+
+#toolbar span.button:hover {
+    opacity: 1;
+}
+
+
+#time {
+    position: fixed;
+    bottom: 1em;
+    right: 2em;
+    font-size: 12px;
+}
