@@ -1,0 +1,22 @@
+
+
+
+#editor {
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-family: consolas;
+    font-size: 12px;
+}
+
+.ace_editor {
+    min-height: 25vh;
+    resize: vertical;
+}
+
+.ace_text-input {
+    position: absolute !important;
+}

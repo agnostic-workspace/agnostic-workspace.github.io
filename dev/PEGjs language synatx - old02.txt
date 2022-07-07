@@ -1,0 +1,200 @@
+
+
+source
+= _ r:rule* { return r; }
+
+
+_
+= [ \t\r\n]*
+
+
+rule
+= identifier:identifier _ name:literal? _ "=" _ first:patternTemplateCouple _ rest:("/" _ patternTemplateCouple _)* _ {
+	
+    return { identifier, name: name && name.literal, alternatives: [first].concat(rest.map(e => e[2])) };
+}
+
+
+patternTemplateCouple
+= pattern:pattern _ template:template _ {
+
+	return { pattern, template };
+}
+
+
+pattern
+= items:item+ _ {
+
+	return { source: text().trim(), parsed: items };
+}
+
+
+template
+= "{" _ template:structContent _ "}" _ {
+
+	return { source: text().trim().substr(1, text().length-2).trim(), parsed: template };
+}
+
+
+item
+= prefix:("&"/"!")? _ role:role? _ content:(literal / ruleCall / group) suffix:("*"/"+"/"?")? _ {
+
+	return Object.assign({ prefix, role, suffix }, content);
+}
+
+
+literal
+= "'" c:[^']+ "'" caseSensitivity:"i"? _ {
+
+	return { literal: c.join(''), caseSensitive: !caseSensitivity };
+}
+/ '"' c:[^"]+ '"' caseSensitivity:"i"? _ {
+
+	return { literal: c.join(''), caseSensitive: !caseSensitivity };
+}
+
+
+ruleCall
+= rule:identifier _ {
+
+	return { rule };
+}
+
+
+group
+= "(" _ first:groupItem _ rest:("/" _ groupItem _)* _ ")" _ {
+
+	return { group: [first].concat(rest.map(e => e[2])) };
+}
+
+
+groupItem
+= prefix:("&"/"!")? _ content:(literal / ruleCall / group) _ suffix:("*"/"+"/"?")? _ {
+
+	return Object.assign({ prefix, suffix }, content);
+}
+
+
+role
+= i:identifier _ ":" _ {
+
+	return i;
+}
+
+
+identifier
+= c:[a-zA-Z_]+ _ {
+
+	return c.join('');
+}
+
+
+structPart
+= [ \t\r\n]* p:link { return p; }
+/ [ \t\r\n]* p:structApply { return p; }
+/ [ \t\r\n]* p:plusLine { return p; }
+
+
+plusLine
+= first:target _ rest:("+" _ target _)+ _ {
+
+	let list = [first].concat(rest.map(e => e[2]));
+
+	let result = {
+    	src: "link",
+    	ref: null,
+        left: [list[0]],
+        type: '|',
+        right: [list[1]]
+    }
+    
+    for (let i = 2; i < list.length; i++)
+    	result = {
+          src: "link",
+          ref: null,
+          left: [result],
+          type: '|',
+          right: [list[i]]
+      }	
+    return result;
+}
+
+
+link
+= ref:ref? _ left:linkable _ type:linkType _ right:linkable _ {
+
+	return { src: "link", ref, left, type, right };
+}
+
+
+linkable
+= first:target _ rest:("," _ target _)* _ {
+
+	return [first].concat(rest.map(e => e[2]));
+}
+
+
+target
+= sublinkable
+/ terminal
+/ placeholder
+
+
+
+sublinkable
+= "(" _ l:link _ ")" _ { return l; }
+
+
+terminal
+= atom
+/ '"' [^"]+ '"' { return { src: "terminal", value: text() }; }
+
+
+atom
+= c:[a-zA-Z0-9_]+ _ { return { src: "terminal", value: c.join('') }; }
+
+
+placeholder
+= "<" a:atom ">" _ { return { src: "placeholder", value: a.value }; }
+
+
+linkType
+= simpleLink
+/ richLink
+
+
+simpleLink
+ = "|" _ { return "|"; }
+ 
+ 
+ richLink
+ = "[" _ l:linkable _ "]" _ {
+ 
+	return l;
+ }
+
+
+ref
+= a:atom ":" _ { return a; }
+
+
+structContent
+= _ first:structPart _ rest:([\n;] _ structPart _)* ";"? _ [ \t\r\n]* { return [first].concat(rest.map(e => e[2])); }
+
+
+arg
+= '(' _ first:(terminal / placeholder) _ rest:(',' _ (terminal / placeholder) _)* ')' _ {
+
+	return [first].concat(rest.map(e => e[2]));
+}
+/ t:terminal { return [t]; }
+/ p:placeholder { return [p]; }
+
+
+structApply
+= "#" _ name:atom _ args:arg* _ {
+
+	return { src: "app", name, args };
+}
+
+

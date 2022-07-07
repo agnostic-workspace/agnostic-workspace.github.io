@@ -1,0 +1,113 @@
+
+
+/* FONTS */
+
+
+@font-face {
+    font-family: 'RobotoMono';
+    src: url('../fonts/RobotoMono-Regular.ttf') format('truetype');
+}
+
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+
+@font-face {
+    font-family: 'RobotoBlack';
+    src: url('../fonts/Roboto-Black.ttf') format('truetype');
+}
+
+
+/* BODY */
+
+
+body {
+    background: #202020;
+    color: #C0C0C0;
+    font-family: RobotoMono;
+    overflow: hidden;
+    width: 100vw;
+
+    --toolbar-height: 24px;
+    --global-padding: 4px;
+}
+
+
+/* SCROLLBARS */
+
+
+body * {
+    scrollbar-color: #606060 #202020;
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #202020;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #606060;
+}
+
+/* SELECTION */
+
+
+::selection {
+    color: black;
+    background: #A0A0A0;
+}
+
+
+/* TOOLBAR */
+
+
+#toolbar {
+    line-height: var(--toolbar-height);
+    height: var(--toolbar-height);
+    font-family: RobotoBlack;
+    font-size: 16px;
+    padding: 0 10px;
+    width: 100vw;
+    white-space: nowrap;
+    cursor: default;
+    background: black;
+    color: white;
+    user-select: none;
+}
+
+
+.toolbar-link {
+    font-family: Roboto;
+    color: #808080;
+    font-size: 12px;
+    margin-left: 2em;
+    padding-left: 1em;
+    padding-right: 1em;
+    text-decoration: none;
+}
+
+.toolbar-link:hover {
+    color: #C0C0C0;
+}
+
+
+/* WORKSPACE */
+
+
+#workspace {
+    width: 100vw;
+    height: calc(100vh - var(--toolbar-height));
+    padding: var(--global-padding);
+    box-sizing: border-box;
+    position: relative;
+    overflow: auto;
+}
+
+

@@ -1,0 +1,162 @@
+
+
+language
+
++   sequence
+/   choice
+?   optional
++   one or more
+*   zero or more
+
+one definition file should produce both packer and unpacker
+
+this is an extern system
+
+
+
+
+start
+= s:sujet v:verbe c:complément {
+
+    this [has subject] <s>
+    this [has verbe] <v>
+    this [has complément] <c>
+}
+
+
+
+
+
+syntax
+
+    simple link
+
+        1: zero | clio
+        2: <1> | has
+        3: <1> | maybe
+
+    without newline
+
+        1: zero | clio; 2: <1> | has; 3: <1> | maybe;
+
+    inline link
+
+        1: zero [has, maybe] clio
+
+    multi link
+
+        1: zero [has] clio, ninja
+    
+    precedence (first | then ,)
+
+        (zero | clio, ninja) | has, maybe
+
+    reusable structure definition
+    
+        # myStruct <arg1> <arg2> {
+
+            <arg1> [has] <arg2>
+        }
+
+    reusable structure usage
+    
+        # myStruct zero clio
+
+
+
+
+syntax 2
+
+    db manipulation
+
+        assert { zero [has] clio }
+        merge { zero [has] clio }
+        delete { zero [has] clio }
+
+    structure definition
+
+        define myStruct <owner> <thing> {
+
+            assert { <owner> [has] <thing> }
+        }
+
+    structure usage
+
+        apply myStruct zero clio
+
+
+
+
+
+=============================================================================
+
+behavior graph
+
+design
+
+we start from behavior trees
+
+instead of control flow nodes with memory, we'll use memoizing decorators
+which gives us a fine-grain control upon what doesn't need to be re-evaluated
+
+we add 2 control flow types : And and Or
+first you split the flow with a Parallel node
+then you re-unite with And or Or
+
+
+
+in believable agents
+
+sequential behavior => one after another, succeed if all succeed
+concurrent behavior => parallel, succeed if all succeed
+collection behavior => parallel, always succeed
+
+
+
+success condition
+- succeed if all succeed
+- succeed after all if one succeed
+- succeed as soon as one succeed
+- succeed anyway after all
+- loop all while all succeed
+- loop all while one succeed
+- loop all until all succeed
+- loop all until one succeed
+
+ticking style
+- sequential (one after another)
+- parallel (all at once)
+
+activation scheme
+- wait for all ticks (and)
+- one tick is enough (or)
+
+execution policy
+- always tick children
+- tick them once, memoize the value
+
+
+
+decomposing
+
+            parents children    description
+
+while       1       1           loop while all success
+until       1       1           loop until one success
+memory      1       1           tick once then give same outcome
+
+fallback    1       N           try children until one succeeds
+sequence    1       N           execute children while they succeed
+activity    1       N           all at once, succeed if all succeed
+parallel    1       N           all at once, succeed if 1 succeeds
+
+ifall       N       1           tick when all parents tick
+ifany       N       1           tick when any parent ticks
+
+
+
+
+
+
+
+STORIES

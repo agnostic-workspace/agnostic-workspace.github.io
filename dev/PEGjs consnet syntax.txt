@@ -1,0 +1,134 @@
+
+
+
+source
+= _ first:sourcePart _ rest:([\n;] _ sourcePart _)* ";"? _ [ \t\r\n]* { return [first].concat(rest.map(e => e[2])); }
+
+
+_
+= [ \t]*
+
+
+sourcePart
+= [ \t\r\n]* p:structDef { return p; }
+/ structPart
+
+
+structPart
+= [ \t\r\n]* p:link { return p; }
+/ [ \t\r\n]* p:structApply { return p; }
+/ [ \t\r\n]* p:plusLine { return p; }
+
+
+plusLine
+= first:target _ rest:("+" _ target _)+ _ {
+
+	let list = [first].concat(rest.map(e => e[2]));
+
+	let result = {
+    	src: "link",
+    	ref: null,
+        left: [list[0]],
+        type: '|',
+        right: [list[1]]
+    }
+    
+    for (let i = 2; i < list.length; i++)
+    	result = {
+          src: "link",
+          ref: null,
+          left: [result],
+          type: '|',
+          right: [list[i]]
+      }	
+    return result;
+}
+
+
+link
+= ref:ref? _ left:linkable _ type:linkType _ right:linkable _ {
+
+	return { src: "link", ref, left, type, right };
+}
+
+
+linkable
+= first:target _ rest:("," _ target _)* _ {
+
+	return [first].concat(rest.map(e => e[2]));
+}
+
+
+target
+= sublinkable
+/ terminal
+/ placeholder
+
+
+
+sublinkable
+= "(" _ l:link _ ")" _ { return l; }
+
+
+terminal
+= atom
+/ '"' [^"]+ '"' { return { src: "terminal", value: text() }; }
+
+
+atom
+= c:[a-zA-Z0-9_]+ _ { return { src: "terminal", value: c.join('') }; }
+
+
+placeholder
+= "<" a:atom ">" _ { return { src: "placeholder", value: a.value }; }
+
+
+linkType
+= simpleLink
+/ richLink
+
+
+simpleLink
+ = "|" _ { return "|"; }
+ 
+ 
+ richLink
+ = "[" _ l:linkable _ "]" _ {
+ 
+	return l;
+ }
+
+
+ref
+= a:atom ":" _ { return a; }
+
+
+structContent
+= _ first:structPart _ rest:([\n;] _ structPart _)* ";"? _ [ \t\r\n]* { return [first].concat(rest.map(e => e[2])); }
+
+
+structDef
+= "$" _ name:atom _ args:placeholder* _ "{" _ def:structContent _ "}" _ {
+
+	return { src: "def", name, args, def };
+}
+
+
+arg
+= '(' _ first:(terminal / placeholder) _ rest:(',' _ (terminal / placeholder) _)* ')' _ {
+
+	return [first].concat(rest.map(e => e[2]));
+}
+/ t:terminal { return [t]; }
+/ p:placeholder { return [p]; }
+
+
+structApply
+= "$" _ name:atom _ args:arg* _ {
+
+	return { src: "app", name, args };
+}
+
+
+
+
