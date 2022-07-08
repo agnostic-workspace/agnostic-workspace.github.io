@@ -61,7 +61,7 @@
         line += makePrefix(key, last) + key;
   
         // append values and the circular reference indicator
-        showValues && (typeof root !== 'object' || root instanceof Date || root instanceof Set) && (line += ': ' + root);
+        showValues && (typeof root !== 'object' || root instanceof Date || root instanceof Set || root instanceof Symbol) && (line += ': ' + String(root));
         circular && (line += ' (circular ref.)');
   
         callback(line);
@@ -115,3 +115,5 @@
   Set.prototype.toString = function() {
       return "(Set "+Array.from(this).join(' ')+')';
   }
+
+  

@@ -26,12 +26,12 @@ ui.editorInterface = {
 
 ui.editorFolder = ui.main.addFolder({
     title: "Code Editor",
-    expanded: true
+    expanded: false
 });
 
 ui.editor = ui.editorFolder.addInput(ui.editorInterface, "eno", {
     view: "textarea",
-    lineCount: 10,
+    lineCount: 25,
     placeholder: ''
 });
 
@@ -44,7 +44,8 @@ setTimeout(function() {
         autoScrollEditorIntoView: true,
         useSoftTabs: true,
         navigateWithinSoftTabs: true,
-        scrollPastEnd: true
+        scrollPastEnd: true,
+        showGutter: false
     });
     ui.ace.setOptions({ fontFamily: "RobotoMono" });
     ui.ace.setTheme("ace/theme/clouds_midnight");
@@ -77,7 +78,7 @@ ui.jsConsoleInterface = {
 
 ui.output = ui.jsConsoleFolder.addMonitor(ui.jsConsoleInterface, "output", {
     multiline: true,
-    lineCount: 15
+    lineCount: 25
 });
 
 ui.input = ui.jsConsoleFolder.addInput(ui.jsConsoleInterface, "input");
