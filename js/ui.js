@@ -40,12 +40,13 @@ $("textarea").attr("id", "editor");
 
 setTimeout(function() {
     ui.ace = ace.edit("editor", {
-        fontSize: "14px",
+        fontSize: "12px",
         autoScrollEditorIntoView: true,
         useSoftTabs: true,
         navigateWithinSoftTabs: true,
         scrollPastEnd: true
     });
+    ui.ace.setOptions({ fontFamily: "RobotoMono" });
     ui.ace.setTheme("ace/theme/clouds_midnight");
     ui.ace.session.setMode("ace/mode/eno");
 
@@ -107,7 +108,7 @@ ui.input.on("change", function(e) {
 
     log({
         input: e.value,
-        output: eval(e.value)
+        value: eval(e.value)
     });
     console.log(e)
 })

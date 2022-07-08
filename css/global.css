@@ -73,7 +73,7 @@ body * {
 
 
 #toolbar {
-    line-height: var(--toolbar-height);
+    line-height: calc(var(--toolbar-height) + 2px);
     height: var(--toolbar-height);
     font-family: RobotoBlack;
     font-size: 16px;
@@ -89,8 +89,8 @@ body * {
 
 .toolbar-link {
     font-family: Roboto;
-    color: #808080;
-    font-size: 12px;
+    color: #5b8ecd;
+    font-size: 14px;
     margin-left: 2em;
     padding-left: 1em;
     padding-right: 1em;
@@ -98,7 +98,7 @@ body * {
 }
 
 .toolbar-link:hover {
-    color: #C0C0C0;
+    color: #9cdcfe;
 }
 
 
