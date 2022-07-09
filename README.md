@@ -1,4 +1,4 @@
-# Agnostic Workspace [🎧](https://dnbradio.com/)
+# Agnostic Workspace [🎧](https://www.bluffphonica.at/)
 
 online instance
 [agnostic-workspace.github.io](https://agnostic-workspace.github.io/)
