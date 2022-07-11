@@ -6,7 +6,7 @@
 function FastorConsnet() {
 
 	this.fs = new Fastor();
-	this.queryCollections = new Set();
+	this.blindzone = false;
 }
 
 
@@ -40,16 +40,15 @@ FastorConsnet.prototype.gather = function(line) {
 
 
 
-FastorConsnet.prototype.query = function(input, callback, prebindings) {
+FastorConsnet.prototype.query = function(input, callback, prebindings, blindzone) {
+
+	this.blindzone = blindzone;
 
 	let source = q(input);
 
-	this.queryCollections = new Set();
-
 	let bindings = this.queryPath(input, source, 0, [], callback, prebindings);
-	let collection = Array.from(this.queryCollections);
 
-	return { bindings, collection };
+	return bindings;
 }
 
 
@@ -87,7 +86,9 @@ FastorConsnet.prototype.bind = function(line, version) {
 
 
 
-FastorConsnet.prototype.queryPath = function(originalQuery, source, iter, collections, callback, bindings = [{}]) {
+FastorConsnet.prototype.queryPath = function(originalQuery, source, iter, collections, callback, bindings) {
+
+	bindings = bindings || [{}];
 
 	if (iter == source.length) { // we made it to the end of the query
 		if (callback)
@@ -103,10 +104,7 @@ FastorConsnet.prototype.queryPath = function(originalQuery, source, iter, collec
 
 		let gathered = this.gather( this.bind(source[iter], binding) );
 	
-		let collection = this.fs.qry(gathered.constants);
-
-		for (let triple of collection)
-			this.queryCollections.add(this.fs.conscarcdr[triple.cons+'|'+triple.car+'|'+triple.cdr]);
+		let collection = this.fs.qry(gathered.constants, this.blindzone);
 
 		let newCollections = collections.concat([collection]);
 				

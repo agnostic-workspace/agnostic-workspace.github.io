@@ -28,27 +28,44 @@ Consnet.prototype.assert = function() {
 
 Consnet.prototype.retract = function(input) {
 
+    let cells = [];
     this.fcn.query.call(this.fcn, input, function(binding, collections, originalQuery) {
-        for (let collection of collections) {
-            try {
-                collection.delete();
-            } catch(e) {}
-        }
+        for (let collection of collections)
+            for (let triple of collection) {
+                this.fs.del(triple.cons, triple.car, triple.cdr);
+                cells.push(triple.cons);
+                cells.push(triple.car);
+                cells.push(triple.cdr);
+            }
     });
+    return cells;
 }
 
 
 
-Consnet.prototype.query = function(input, callback, bindings) {
+Consnet.prototype.query = function(input, bindings, callback) {
 
-    return this.fcn.query.call(this.fcn, input, callback, bindings).bindings;
+    return this.fcn.query.call(this.fcn, input, callback, bindings);
 }
 
 
 
-Consnet.prototype.collect = function(input, callback, bindings) {
+Consnet.prototype.match = function(input, bindings, callback) {
 
-    return this.fcn.query.call(this.fcn, input, callback, bindings).collection.map(id => this.fcn.fs.db.all[id]);
+    return populate(
+        this.fcn.query.call(this.fcn, input, callback, bindings),
+        input
+    );
+}
+
+
+
+Consnet.prototype.collect = function(input, bindings, callback) {
+
+    return x(populate(
+        this.fcn.query.call(this.fcn, input, callback, bindings),
+        input
+    ).join('\n'));
 }
 
 

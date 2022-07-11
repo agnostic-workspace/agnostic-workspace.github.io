@@ -99,6 +99,8 @@ function log() {
     let content = Array.from(arguments).map(c => treeify.asTree({ [new Date().toTimeString()]: c }, true)).join('\n');
     if (content.length) content += '\n';
     ui.jsConsoleInterface.output += content;
+
+    console.log.apply(null, [...arguments])
 }
 
 

@@ -198,34 +198,71 @@ cn.query("A|B")
 
 
 
+
+
+
+
+
+/*
+
+let vs = new VectorSpace();
+
+vs.entry({ importance: 2, urgency: 5}, "some value 1");
+vs.entry({ importance: 3, urgency: 4}, "some value 2");
+vs.entry({ importance: 5, urgency: 2}, "some value 4");
+vs.entry({ importance: 6, urgency: 1}, "some value 5");
+
+vs.sortBySimilarity({ importance: -10, urgency: 10 });
+//log(vs.contents)
+
+vs.sortBySimilarity({ importance: 10, urgency: -10 });
+
+vs.entry({ importance: 4, urgency: 3}, "some value 3");
+//log(vs.contents)
+*/
+
+
+
 let cn = new Consnet();
 
 cn.assert(`
 
-$ owns <owner> <thing> {
-	<owner> [has] <thing>
-	<owner> [is] "some owner"
-}
-
-$ owns zero (television, radio, car, moto)
-
-test: janet | bicycle, legs
-test | has
+zero [owns] television, radio, car, moto
 
 moto, car [is] vehicle
+
+toy [has] four_wheels
+
+car [has] four_wheels
 
 `);
 
 
-cn.group("Something [is] vehicle", "mobile");
 
+let st = new Storyteller(cn);
+
+st.teller("Someone [owns] Something", { priority: 90 }, function(binding, collections) {
+
+	return binding.Someone+" has a "+binding.Something+". ";
+});
+
+st.teller("Something [has] four_wheels", { priority: 50 }, function(binding, collections) {
+
+	return "A "+binding.Something+" has 4 wheels. ";
+});
+
+st.angle({ priority: 100 });
 
 log(
-	cn.query("What | mobile")
-)
+	st.tell()
+);
+
+st.angle({ priority: 0 });
+
+log(
+	st.tell()
+);
 
 
-
-
-
-
+// this thing is all fucked up
+// wrong way

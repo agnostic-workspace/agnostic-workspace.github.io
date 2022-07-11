@@ -45,42 +45,50 @@ Fastor.prototype.del = function (cons, car, cdr) {
         conscdr = cons + '|' + cdr,
         carcdr = car + '|' + cdr;
 
-    this.conscarcdr.delete(conscar + '|' + cdr);
+    let conscarcdr = conscar + '|' + cdr;
+    let id = this.conscarcdr[conscarcdr];
+
+    delete this.db.all[id];
+    delete this.conscarcdr[conscarcdr];
 
     if (this.db.cons[cons]) {
-        this.db.cons[cons].delete(carcdr);
+        this.db.cons[cons].delete(id);
         if (!this.db.cons[cons].size) delete this.db.cons[cons];
     }
 
     if (this.db.car[car]) {
-        this.db.car[car].delete(conscdr);
+        this.db.car[car].delete(id);
         if (!this.db.car[car].size) delete this.db.car[car];
     }
 
     if (this.db.cdr[cdr]) {
-        this.db.cdr[cdr].delete(conscar);
+        this.db.cdr[cdr].delete(id);
         if (!this.db.cdr[cdr].size) delete this.db.cdr[cdr];
     }
 
     if (this.db.conscar[conscar]) {
-        this.db.conscar[conscar].delete(cdr);
+        this.db.conscar[conscar].delete(id);
         if (!this.db.conscar[conscar].size) delete this.db.conscar[conscar];
     }
 
     if (this.db.conscdr[conscdr]) {
-        this.db.conscdr[conscdr].delete(car);
+        this.db.conscdr[conscdr].delete(id);
         if (!this.db.conscdr[conscdr].size) delete this.db.conscdr[conscdr];
     }
 
     if (this.db.carcdr[carcdr]) {
-        this.db.carcdr[carcdr].delete(cons);
+        this.db.carcdr[carcdr].delete(id);
         if (!this.db.carcdr[carcdr].size) delete this.db.carcdr[carcdr];
     }
 }
 
 
 
-Fastor.prototype.qry = function (query) {
+Fastor.prototype.qry = function (query, blindzone) {
+
+    if (blindzone)
+        if (blindzone.includes(query.cons) || blindzone.includes(query.car) || blindzone.includes(query.cdr))
+            return [];
 
     if (query.cons) {
 
@@ -88,7 +96,7 @@ Fastor.prototype.qry = function (query) {
 
             if (query.cdr) {
 
-                return (this.conscarcdr.has(query.cons + '|' + query.car + '|' + query.cdr)) ?
+                return (this.conscarcdr[query.cons + '|' + query.car + '|' + query.cdr]) ?
                     [{ cons: query.cons, car: query.car, cdr: query.cdr }] :
                     [];
 
