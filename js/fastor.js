@@ -24,14 +24,14 @@ function Fastor() {
 
 Fastor.prototype.add = function (cons, car, cdr) {
 
-    if (this.conscarcdr[cons + '|' + car + '|' + cdr]) return;
+    if (this.conscarcdr[strvb(cons, car, cdr)]) return;
 
     this.db.all[++this.dbId] = { cons, car, cdr };
-    this.conscarcdr[cons + '|' + car + '|' + cdr] = this.dbId;
+    this.conscarcdr[strvb(cons, car, cdr)] = this.dbId;
 
-    (this.db.conscar[cons + '|' + car] || (this.db.conscar[cons + '|' + car] = new Set())).add(this.dbId);
-    (this.db.conscdr[cons + '|' + cdr] || (this.db.conscdr[cons + '|' + cdr] = new Set())).add(this.dbId);
-    (this.db.carcdr[car + '|' + cdr] || (this.db.carcdr[car + '|' + cdr] = new Set())).add(this.dbId);
+    (this.db.conscar[strvb(cons, car)] || (this.db.conscar[strvb(cons, car)] = new Set())).add(this.dbId);
+    (this.db.conscdr[strvb(cons, cdr)] || (this.db.conscdr[strvb(cons, cdr)] = new Set())).add(this.dbId);
+    (this.db.carcdr[strvb(car, cdr)] || (this.db.carcdr[strvb(car, cdr)] = new Set())).add(this.dbId);
     (this.db.cons[cons] || (this.db.cons[cons] = new Set())).add(this.dbId);
     (this.db.car[car] || (this.db.car[car] = new Set())).add(this.dbId);
     (this.db.cdr[cdr] || (this.db.cdr[cdr] = new Set())).add(this.dbId);
@@ -41,11 +41,11 @@ Fastor.prototype.add = function (cons, car, cdr) {
 
 Fastor.prototype.del = function (cons, car, cdr) {
 
-    let conscar = cons + '|' + car,
-        conscdr = cons + '|' + cdr,
-        carcdr = car + '|' + cdr;
+    let conscar = strvb(cons, car),
+        conscdr = strvb(cons, cdr),
+        carcdr = strvb(car, cdr);
 
-    let conscarcdr = conscar + '|' + cdr;
+    let conscarcdr = strvb(conscar, cdr);
     let id = this.conscarcdr[conscarcdr];
 
     delete this.db.all[id];
@@ -86,9 +86,7 @@ Fastor.prototype.del = function (cons, car, cdr) {
 
 Fastor.prototype.qry = function (query, blindzone) {
 
-    if (blindzone)
-        if (blindzone.includes(query.cons) || blindzone.includes(query.car) || blindzone.includes(query.cdr))
-            return [];
+    let result = [];
 
     if (query.cons) {
 
@@ -96,27 +94,25 @@ Fastor.prototype.qry = function (query, blindzone) {
 
             if (query.cdr) {
 
-                return (this.conscarcdr[query.cons + '|' + query.car + '|' + query.cdr]) ?
-                    [{ cons: query.cons, car: query.car, cdr: query.cdr }] :
-                    [];
+                result = (this.conscarcdr[strvb(query.cons, query.car, query.cdr)]) || [];
 
             } else {
 
-                return this.db.conscar[query.cons + '|' + query.car] ?
-                    [...this.db.conscar[query.cons + '|' + query.car]].map(id => this.db.all[id]) :
+                result = this.db.conscar[strvb(query.cons, query.car)] ?
+                    [...this.db.conscar[strvb(query.cons, query.car)]] :
                     [];
             }
 
         } else if (query.cdr) {
 
-            return this.db.conscdr[query.cons + '|' + query.cdr] ?
-                [...this.db.conscdr[query.cons + '|' + query.cdr]].map(id => this.db.all[id]) :
+            result = this.db.conscdr[strvb(query.cons, query.cdr)] ?
+                [...this.db.conscdr[strvb(query.cons, query.cdr)]] :
                 [];
 
         } else {
 
-            return this.db.cons[query.cons] ?
-                [...this.db.cons[query.cons]].map(id => this.db.all[id]) :
+            result = this.db.cons[query.cons] ?
+                [...this.db.cons[query.cons]] :
                 [];
         }
 
@@ -124,27 +120,29 @@ Fastor.prototype.qry = function (query, blindzone) {
 
         if (query.cdr) {
 
-            return this.db.carcdr[query.car + '|' + query.cdr] ?
-                [...this.db.carcdr[query.car + '|' + query.cdr]].map(id => this.db.all[id]) :
+            result = this.db.carcdr[strvb(query.car, query.cdr)] ?
+                [...this.db.carcdr[strvb(query.car, query.cdr)]] :
                 [];
 
         } else {
 
-            return this.db.car[query.car] ?
-                [...this.db.car[query.car]].map(id => this.db.all[id]) :
+            result = this.db.car[query.car] ?
+                [...this.db.car[query.car]] :
                 [];
         }
 
     } else if (query.cdr) {
 
-        return this.db.cdr[query.cdr] ?
-            [...this.db.cdr[query.cdr]].map(id => this.db.all[id]) :
+        result = this.db.cdr[query.cdr] ?
+            [...this.db.cdr[query.cdr]] :
             [];
 
     } else {
 
-        return Object.values(this.db.all);
+        result = Object.keys(this.db.all);
     }
+
+    return result.filter(id => !blindzone.includes(id)).map(id => this.db.all[id]);
 }
 
 

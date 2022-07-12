@@ -1,36 +1,35 @@
-
+ 
 
 
 function VectorSpace() {
 
-	this.contents = [];
-	this.angle = false;
+    this.entries = [];
+    this.angle = false;
     this.sorted = [];
 }
 
 
 
-VectorSpace.prototype.entry = function(vectorComponents, content, preventSorting) {
-	
-	this.contents.push({ vector: new Vector(vectorComponents), content });
-	if (this.angle && !preventSorting)
-		this.sortBySimilarity();
+VectorSpace.prototype.entry = function(vectorComponents, content) {
+
+    this.entries.push({
+        vector: new Vector(vectorComponents),
+        content
+    });
+
+    if (this.angle) this.sort();
 }
 
 
 
-VectorSpace.prototype.sortBySimilarity = function(vectorComponents) {
-	
-	if (vectorComponents)
-		this.angle = new Vector(vectorComponents);
+VectorSpace.prototype.sort = function(vectorComponents) {
 
-	this.contents.sort((a, b) => {
-		return b.vector.getDistance(this.angle) - a.vector.getCosineSimilarity(this.angle);
-	});
+    if (vectorComponents)
+        this.angle = new Vector(vectorComponents);
+    
+    this.entries.sort((a, b) =>
+        b.vector.getDistance(this.angle) - a.vector.getDistance(this.angle)
+    );
 
-    this.sorted = this.contents.map(entry => entry.content);
-
-	log(this.sorted)
+    this.sorted = this.entries.map(entry => entry.content);
 }
-
-

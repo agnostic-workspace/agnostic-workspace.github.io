@@ -203,7 +203,7 @@ cn.query("A|B")
 
 
 
-/*
+
 
 let vs = new VectorSpace();
 
@@ -212,14 +212,14 @@ vs.entry({ importance: 3, urgency: 4}, "some value 2");
 vs.entry({ importance: 5, urgency: 2}, "some value 4");
 vs.entry({ importance: 6, urgency: 1}, "some value 5");
 
-vs.sortBySimilarity({ importance: -10, urgency: 10 });
-//log(vs.contents)
+vs.sort({ importance: -10, urgency: 10 });
+log(vs.sorted)
 
-vs.sortBySimilarity({ importance: 10, urgency: -10 });
+vs.sort({ importance: 10, urgency: -10 });
 
 vs.entry({ importance: 4, urgency: 3}, "some value 3");
-//log(vs.contents)
-*/
+log(vs.sorted)
+
 
 
 
@@ -227,11 +227,9 @@ let cn = new Consnet();
 
 cn.assert(`
 
-zero [owns] television, radio, car, moto
+zero [owns] television, radio, moto
 
 moto, car [is] vehicle
-
-toy [has] four_wheels
 
 car [has] four_wheels
 
@@ -257,6 +255,16 @@ log(
 	st.tell()
 );
 
+cn.assert(`
+
+zero [owns] car
+
+toy [has] four_wheels
+
+`);
+
+//st.told = [];
+
 st.angle({ priority: 0 });
 
 log(
@@ -264,5 +272,3 @@ log(
 );
 
 
-// this thing is all fucked up
-// wrong way
