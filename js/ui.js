@@ -100,7 +100,7 @@ function log() {
     if (content.length) content += '\n';
     ui.jsConsoleInterface.output += content;
 
-    console.log.apply(null, [...arguments])
+    console.log.apply(null, [...arguments]);
 }
 
 

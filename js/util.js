@@ -84,8 +84,3 @@ function isVar(item) {
 }
 
 
-
-function strvb() { // string with vertical bars
-
-    return Array.from(arguments).join('|');
-}

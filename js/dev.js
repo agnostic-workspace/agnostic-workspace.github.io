@@ -43,7 +43,7 @@ cn.qAssert("Someone [has] legs", "Someone [is] beautiful")
 
 
 
-console.log("[QASSERTING]")
+log("[QASSERTING]")
 
 for (let i = 0; i < imax; i++)
 	cn.qAssert("zero"+i+" [has] SomeItem", "SomeItem [has] owner")
@@ -62,12 +62,12 @@ myq = `Subject [is] Object`;
 
 
 
-console.log("[QUERYING]")
+log("[QUERYING]")
 
-cn.query(myq, r => { ui.t(populate([r], myq)) });
-
+cn.query(myq, r => { log(populate([r], myq)) });
 
 */
+
 
 
 
@@ -197,78 +197,97 @@ cn.query("A|B")
 
 
 
+/*
+let cn = new Consnet();
+
+cn.assert(`
+
+$ owns <owner> <thing> {
+	<owner> [has] <thing>
+	<owner> [is] "some owner"
+}
+
+$ owns zero (television, radio, car, moto)
+
+test: janet | bicycle, legs
+test | has
+
+moto, car [is] vehicle
+
+`);
+
+
+cn.group("Something [is] vehicle", "mobile");
+
+
+log(
+	cn.query("What | mobile")
+)
+
+*/
+
+
+
+/*
+
+let cn = new Consnet();
+
+cn.assert(`
+
+zero [is] one, two, three, four, five
+two, four [is] even
+
+`);
 
 
 
 
+//cn.group("NB [is] even", "test_group");
+
+//log(cn.fcn.fs.db)
+
+log(cn.query("NB [is] even"));
+
+*/
 
 
 
 
-let vs = new VectorSpace();
-
-vs.entry({ importance: 2, urgency: 5}, "some value 1");
-vs.entry({ importance: 3, urgency: 4}, "some value 2");
-vs.entry({ importance: 5, urgency: 2}, "some value 4");
-vs.entry({ importance: 6, urgency: 1}, "some value 5");
-
-vs.sort({ importance: -10, urgency: 10 });
-log(vs.sorted)
-
-vs.sort({ importance: 10, urgency: -10 });
-
-vs.entry({ importance: 4, urgency: 3}, "some value 3");
-log(vs.sorted)
 
 
 
 
 let cn = new Consnet();
 
-cn.assert(`
+let nat = new Natural(cn);
 
-zero [owns] television, radio, moto
+nat.word("le", 1);
+nat.word("la", 1);
+nat.word("chat", 0);
+nat.word("donne", 3);
+nat.word("une", 1);
+nat.word("un", 1);
+nat.word("fromage", 0);
+nat.word("souris", 0);
+nat.word("a", 1);
+nat.word("x", 0);
 
-moto, car [is] vehicle
 
-car [has] four_wheels
+//let parsedTree = nat.parseToTree(str);
 
-`);
+//log(parsedTree);
+
+//log(nat.stringifyFromTree(parsedTree))
+
+let str1 = "le chat donne un fromage a la souris.";
+let str2 = "le chat donne Quoi a Qui.";
+
+//log(nat.parse(str1, false))
+//log(nat.parse(str2, true))
+
+nat.assert(str1);
+log(nat.query(str2));
 
 
-
-let st = new Storyteller(cn);
-
-st.teller("Someone [owns] Something", { priority: 90 }, function(binding, collections) {
-
-	return binding.Someone+" has a "+binding.Something+". ";
-});
-
-st.teller("Something [has] four_wheels", { priority: 50 }, function(binding, collections) {
-
-	return "A "+binding.Something+" has 4 wheels. ";
-});
-
-st.angle({ priority: 100 });
-
-log(
-	st.tell()
-);
-
-cn.assert(`
-
-zero [owns] car
-
-toy [has] four_wheels
-
-`);
-
-//st.told = [];
-
-st.angle({ priority: 0 });
-
-log(
-	st.tell()
-);
-
+log(Object.values(cn.fcn.fs.db.all))
 
